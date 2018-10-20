@@ -19,3 +19,6 @@ npm i nodemon mocha expect supertest --save-dev
 
 Run the test using
 npm run test-watch
+
+We can use git commit -a -m 'Any message' when we have done only modifications of files and not added anything new.
+We can skip git add .
