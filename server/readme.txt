@@ -11,3 +11,11 @@ Install mongoose at first by typing the command: npm i mongoose --save
 // });
 
 Install express :  npm i express --save
+
+Now for testing we have to install the following packages
+nodemon mocha expect supertest
+
+npm i nodemon mocha expect supertest --save-dev
+
+Run the test using
+npm run test-watch
