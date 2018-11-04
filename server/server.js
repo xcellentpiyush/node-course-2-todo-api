@@ -1,6 +1,7 @@
-var express = require('express');
-var bodyParser = require('body-parser');
-var { ObjectID } = require('mongodb');
+const _ = require('lodash');
+const express = require('express');
+const bodyParser = require('body-parser');
+const { ObjectID } = require('mongodb');
 
 var { mongoose } = require('./db/mongoose');
 var { Todo } = require('./models/todo');
@@ -57,6 +58,32 @@ app.delete('/todos/:id', (request, response) => {
     Todo.findByIdAndRemove(id).then((todo) => {
         if (!todo) {
             return response.status(404).send('No record found to delete');
+        }
+
+        response.send({ todo });
+    }).catch((error) => {
+        response.status(400).send(error);
+    });
+});
+
+app.patch('/todos/:id', (request, response) => {
+    var id = request.params.id;
+    var body = _.pick(request.body, ['text', 'completed']);
+
+    if (!ObjectID.isValid(id)) {
+        return response.status(404).send('Invalid Id');
+    }
+
+    if (_.isBoolean(body.completed) && body.completed) {
+        body.completedAt = new Date().getTime();
+    } else {
+        body.completed = false;
+        body.completedAt = null;
+    }
+
+    Todo.findByIdAndUpdate(id, { $set: body }, { new: true }).then((todo) => {
+        if (!todo) {
+            return response.status(404).send('No record found to update');
         }
 
         response.send({ todo });
