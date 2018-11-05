@@ -13,6 +13,9 @@ var app = express();
 const port = process.env.PORT || 3000;
 app.use(bodyParser.json());
 
+/**
+ * Todo
+ */
 app.post('/todos', (request, response) => {
     var todo = new Todo({
         text: request.body.text
@@ -89,6 +92,20 @@ app.patch('/todos/:id', (request, response) => {
         }
 
         response.send({ todo });
+    }).catch((error) => {
+        response.status(400).send(error);
+    });
+});
+
+/**
+ * User
+ */
+app.post('/users', (request, response) => {
+    var body = _.pick(request.body, ['email', 'password']);
+    var user = new User(body);
+
+    user.save().then((user) => {
+        response.send(user);
     }).catch((error) => {
         response.status(400).send(error);
     });
