@@ -10,7 +10,9 @@ var todos = [{
     text: 'Text1 Added'
 }, {
     _id: new ObjectID(),
-    text: 'Text2 Added'
+    text: 'Text2 Added',
+    completed: true,
+    completedAt: 256432
 }];
 
 beforeEach((done) => {
@@ -140,6 +142,44 @@ describe('DELETE /todos/:id', () => {
         request(app)
             .delete('/todos/piyush')
             .expect(404)
+            .end(done);
+    });
+});
+
+describe('PATCH /todos/:id', () => {
+    it('should update the todo', (done) => {
+        const id = todos[0]._id.toHexString();
+        const text = 'Solve sudoku in 10 minutes';
+
+        request(app)
+            .patch(`/todos/${id}`)
+            .send({
+                text,
+                completed: true
+            })
+            .expect(200)
+            .expect((response) => {
+                expect(response.body.todo.text).toBe(text);
+                expect(response.body.todo.completed).toBe(true);
+                expect(typeof response.body.todo.completedAt).toBe('number');
+            })
+            .end(done);
+    });
+
+    it('should clear completedAt when todo is not completed', (done) => {
+        const id = todos[1]._id.toHexString();
+        const completed = false;
+
+        request(app)
+            .patch(`/todos/${id}`)
+            .send({
+                completed: false
+            })
+            .expect(200)
+            .expect((response) => {
+                expect(response.body.todo.completed).toBe(false);
+                expect(response.body.todo.completedAt).toBeFalsy();
+            })
             .end(done);
     });
 });
